@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List, Tuple
 import base64
 from OpenSSL import crypto
@@ -12,17 +11,16 @@ class CertificateA1:
     def __init__(self, b64_certificate: str, password: str) -> None:
         self._certificate_file = CertificateA1.binary_from_base64(b64_certificate)
         self._password = password.encode()
-            
+
         try:
             self._pkcs12 = crypto.load_pkcs12(self._certificate_file, self._password)
         except crypto.Error:
             raise Exception("Certificado ou senha invalida")
-            
 
         self._certificate = crypto.dump_certificate(
             crypto.FILETYPE_PEM, self._pkcs12.get_certificate()
         )
-        
+
         self._private_key = crypto.dump_privatekey(
             crypto.FILETYPE_PEM, self._pkcs12.get_privatekey()
         )
@@ -37,38 +35,40 @@ class CertificateA1:
 
     def cert_key(self) -> Tuple[str, str]:
         return self._certificate.decode(), self._private_key.decode()
-    
+
     @staticmethod
     def binary_from_base64(b64_string: str) -> bytes:
         return base64.b64decode(b64_string)
-    
+
     @property
     def not_valid_before(self):
         return self.cert.not_valid_before
-    
+
     @property
     def not_valid_after(self):
         return self.cert.not_valid_after
-    
+
     @property
     def issuer(self):
         return self._x509.get_subject().OU
-    
+
     @property
     def expired(self):
         return self._x509.has_expired()
-    
+
     @property
     def CNPJ(self):
         subject = self._x509.get_subject().CN
-        if ':' in subject:
-            return subject.split(':')[1]
-        
+        if ":" in subject:
+            return subject.split(":")[1]
+
     @property
     def owner(self):
         subject = self._x509.get_subject().CN
-        if ':' in subject:
-            return subject.split(':')[0]
+        if ":" in subject:
+            return subject.split(":")[0]
+        else:
+            return subject
 
 
 class CertificateAsFile:

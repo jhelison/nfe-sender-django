@@ -6,9 +6,6 @@ from certificate import CertificateA1, CertificateAsFile
 from lxml import etree
 import requests
 from requests import Session
-from zeep import Client
-from zeep.transports import Transport
-from zeep.cache import SqliteCache
 
 requests.packages.urllib3.disable_warnings(
     requests.packages.urllib3.exceptions.InsecureRequestWarning
@@ -33,7 +30,7 @@ class SefazCommunication:
         root.append(self._element_with_text("tpAmb", 2 if self.hom else 1))
         root.append(self._element_with_text("cUF", self.cUF))
         root.append(self._element_with_text("xServ", "STATUS"))
-        
+
         print(str(etree.tostring(root)))
 
         return self._post(URL, SERVICE, root)
@@ -89,7 +86,7 @@ class SefazCommunication:
     @staticmethod
     def _get_cache():
         temp_dir = tempfile.gettempdir()
-        cache_file = os.path.join(temp_dir, 'transmition.db')
+        cache_file = os.path.join(temp_dir, "transmition.db")
         return SqliteCache(path=cache_file, timeout=60)
 
 

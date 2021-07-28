@@ -55,15 +55,11 @@ class Signer:
                 return element.get("Id")
 
 
-XML_FILE = (
-    r"C:\Users\jheli\Documents\programming-projects\NFe-Project\nfe-back\references\NFE_nao_assinada copy.xml"
-)
+XML_FILE = r"C:\Users\jheli\Documents\programming-projects\NFe-Project\nfe-back\references\NFE_nao_assinada copy.xml"
 xml_str = open(XML_FILE, "r").read()
 xml_tree = etree.fromstring(xml_str, parser=etree.XMLParser(remove_blank_text=True))
 
-cert_path = (
-    r"C:\Users\jheli\Documents\programming-projects\NFe-Project\nfe-back\references\ORIZA_VIEIRA_LIMA.pfx"
-)
+cert_path = r"C:\Users\jheli\Documents\programming-projects\NFe-Project\nfe-back\references\ORIZA_VIEIRA_LIMA.pfx"
 password = "81979780"
 cert = CertificateA1(cert_path, password)
 
