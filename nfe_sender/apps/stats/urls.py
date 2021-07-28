@@ -2,5 +2,6 @@ from django.urls import path
 from apps.stats import views
 
 urlpatterns = [
-    path('', views.server_status)
+    path('status/', views.server_status, name='stats-status'),
+    path('', views.stats_root)
 ]

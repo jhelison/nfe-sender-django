@@ -6,7 +6,7 @@ MANAGEPY = $(CURDIR)/$(PROJECTNAME)/manage.py
 env:
 	shell C:/Users/jheli/AppData/Local/pypoetry/Cache/virtualenvs/nfe-sender-django-QEaoWS5b-py3.9/Scripts/Activate.ps1
 
-start:
+run:
 	python $(MANAGEPY) runserver
 
 migrate:
