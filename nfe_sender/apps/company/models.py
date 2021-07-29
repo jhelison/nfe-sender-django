@@ -74,6 +74,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    # cnpj = models.CharField(max_length=14, validators=[CNPJ_validator], unique=True)
     #Base django user filds
     username = models.CharField(
         "username",
@@ -103,8 +104,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text="Designates whether this user has confirmed his account.",
     )
 
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["first_name", "last_name"]
 
     objects = UserManager()
 
