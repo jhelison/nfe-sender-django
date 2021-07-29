@@ -16,10 +16,7 @@ class CertificateA1:
         self._certificate_file = CertificateA1.binary_from_base64(b64_certificate)
         self._password = password.encode()
 
-        try:
-            self._pkcs12 = crypto.load_pkcs12(self._certificate_file, self._password)
-        except crypto.Error:
-            raise Exception("Certificado ou senha invalida")
+        self._pkcs12 = crypto.load_pkcs12(self._certificate_file, self._password)
 
         self._certificate = crypto.dump_certificate(
             crypto.FILETYPE_PEM, self._pkcs12.get_certificate()
