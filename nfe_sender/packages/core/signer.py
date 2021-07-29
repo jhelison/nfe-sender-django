@@ -1,10 +1,12 @@
-from certificate import CertificateA1
+from packages.core.certificate import CertificateA1
 from copy import deepcopy
 from lxml import etree
 import signxml
 
 
 class Signer:
+    """Signs a xml file and returns it as a Etree file"""
+
     def __init__(self, certificate: CertificateA1) -> None:
         self.certificate = certificate
         self.cert = certificate._certificate
