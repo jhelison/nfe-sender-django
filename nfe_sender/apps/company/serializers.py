@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from packages.core.certificate import CertificateA1
+from rest_framework.authtoken.models import Token
 import re
 
 from apps.company.models import CustomUser
@@ -62,3 +63,33 @@ class UserAuthSerializer(serializers.Serializer):
         
     def create(self, validated_data):
         return CustomUser.objects.create(**validated_data)
+    
+class RecoverSerializer(serializers.Serializer):
+    base64_certificate = serializers.CharField()
+    certificate_password = serializers.CharField(max_length=80)
+    
+    def validate(self, data):
+        """
+        Validate the certificate
+        """
+        try:
+            CertificateA1(data["base64_certificate"], data["certificate_password"])
+        except:
+            raise serializers.ValidationError("Certificado ou senha invalidos")
+        
+        try:
+            self.user = CustomUser.objects.get(
+                certificate_password=data["certificate_password"],
+                base64_certificate=data["base64_certificate"]
+                )
+        except:
+            raise serializers.ValidationError("Usuário não encontrado")
+        
+        return data
+        
+    def get_token(self):
+        token, _ = Token.objects.get_or_create(user=self.user)
+        
+        return token.key
+        
+        
