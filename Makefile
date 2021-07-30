@@ -4,8 +4,6 @@ PROJECTNAME = nfe_sender
 MANAGEPY = $(CURDIR)/$(PROJECTNAME)/manage.py
 DATABASE = $(CURDIR)/$(PROJECTNAME)/db.sqlite3
 
-MIGRATIONS =  $(sort $(dir $(wildcard ../migrations/*/)))
-
 env:
 	poetry shell
 
@@ -26,10 +24,5 @@ superuser:
 # $(wildcard ../Test/*/.)
 
 reset:
-	powershell if(Test-Path $(DATABASE)) {Remove-Item $(DATABASE)}
-
-	powershell $var = Get-ChildItem -Recurse | Where-Object { $_.PSIsContainer -and $_.Name.EndsWith("migrations")}
-
-for Get-ChildItem -Recurse | Where-Object { $_.PSIsContainer -and $_.Name.EndsWith("migrations")}
-
-Get-ChildItem -Recurse | Where-Object {$_.Name.EndsWith("migrations")} | echo
+	pwsh -noprofile -command if(Test-Path $(DATABASE)) {Remove-Item $(DATABASE)}
+	pwsh -noprofile -command (Get-ChildItem -Recurse ^| Where-Object {$_.Name.EndsWith("migrations")}).fullname ^| Remove-Item -Recurse -Exclude __init__.py
