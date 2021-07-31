@@ -1,20 +1,20 @@
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from .serializers import StatusSerializer
-from packages.core import request_builder
+from packages.core.request_builder import process_status
 
 
-@api_view(["POST"])
-def nfe_status_servico(request):
-    serializer = StatusSerializer(data=request.data)
-
-    if serializer.is_valid():
-        status = request_builder.process_status(serializer.validated_data)
-        return Response(status)
-
-    return Response(serializer.errors)
+class NfeStatusServico(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+    def get(self, request):
+        server_status = process_status(request.user.base64_certificate, request.user.certificate_password)
+        
+        return Response(server_status)
 
 
 @api_view(["GET"])

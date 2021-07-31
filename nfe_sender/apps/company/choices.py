@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class BrazilianStates(models.IntegerChoices):
     AC = 12
     AL = 27

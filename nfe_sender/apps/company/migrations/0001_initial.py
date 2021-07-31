@@ -9,32 +9,112 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
+        ("auth", "0012_alter_user_first_name_max_length"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CustomUser',
+            name="CustomUser",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('username', models.CharField(max_length=14, unique=True, verbose_name='cnpj')),
-                ('is_staff', models.BooleanField(default=False)),
-                ('is_active', models.BooleanField(default=True)),
-                ('date_joined', models.DateTimeField(default=django.utils.timezone.now)),
-                ('is_company', models.BooleanField(default=True)),
-                ('company_name', models.CharField(blank=True, max_length=80)),
-                ('uf', models.IntegerField(choices=[(12, 'Ac'), (27, 'Al'), (13, 'Am'), (16, 'Ap'), (29, 'Ba'), (23, 'Ce'), (53, 'Df'), (32, 'Es'), (52, 'Go'), (21, 'Ma'), (31, 'Mg'), (50, 'Ms'), (51, 'Mt'), (15, 'Pa'), (25, 'Pb'), (26, 'Pe'), (22, 'Pi'), (41, 'Pr'), (33, 'Rj'), (24, 'Rn'), (11, 'Ro'), (14, 'Rr'), (43, 'Rs'), (42, 'Sc'), (28, 'Se'), (35, 'Sp'), (17, 'To')], default=21)),
-                ('is_hom', models.BooleanField(default=True)),
-                ('base64_certificate', models.TextField(blank=True)),
-                ('certificate_password', models.CharField(blank=True, max_length=80)),
-                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.Group', verbose_name='groups')),
-                ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last login"
+                    ),
+                ),
+                (
+                    "is_superuser",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates that this user has all permissions without explicitly assigning them.",
+                        verbose_name="superuser status",
+                    ),
+                ),
+                (
+                    "username",
+                    models.CharField(max_length=14, unique=True, verbose_name="cnpj"),
+                ),
+                ("is_staff", models.BooleanField(default=False)),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "date_joined",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                ("is_company", models.BooleanField(default=True)),
+                ("company_name", models.CharField(blank=True, max_length=80)),
+                (
+                    "uf",
+                    models.IntegerField(
+                        choices=[
+                            (12, "Ac"),
+                            (27, "Al"),
+                            (13, "Am"),
+                            (16, "Ap"),
+                            (29, "Ba"),
+                            (23, "Ce"),
+                            (53, "Df"),
+                            (32, "Es"),
+                            (52, "Go"),
+                            (21, "Ma"),
+                            (31, "Mg"),
+                            (50, "Ms"),
+                            (51, "Mt"),
+                            (15, "Pa"),
+                            (25, "Pb"),
+                            (26, "Pe"),
+                            (22, "Pi"),
+                            (41, "Pr"),
+                            (33, "Rj"),
+                            (24, "Rn"),
+                            (11, "Ro"),
+                            (14, "Rr"),
+                            (43, "Rs"),
+                            (42, "Sc"),
+                            (28, "Se"),
+                            (35, "Sp"),
+                            (17, "To"),
+                        ],
+                        default=21,
+                    ),
+                ),
+                ("is_hom", models.BooleanField(default=True)),
+                ("base64_certificate", models.TextField(blank=True)),
+                ("certificate_password", models.CharField(blank=True, max_length=80)),
+                (
+                    "groups",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.Group",
+                        verbose_name="groups",
+                    ),
+                ),
+                (
+                    "user_permissions",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="Specific permissions for this user.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.Permission",
+                        verbose_name="user permissions",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

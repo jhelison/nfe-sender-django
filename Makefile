@@ -25,4 +25,4 @@ superuser:
 
 reset:
 	pwsh -noprofile -command if(Test-Path $(DATABASE)) {Remove-Item $(DATABASE)}
-	pwsh -noprofile -command (Get-ChildItem -Recurse ^| Where-Object {$_.Name.EndsWith("migrations")}).fullname ^| Remove-Item -Recurse -Exclude __init__.py
+	pwsh -noprofile -command (Get-ChildItem -Recurse | Where-Object {$_.Name.EndsWith("migrations")}).fullname | Remove-Item -Recurse -Exclude __init__.py

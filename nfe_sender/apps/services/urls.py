@@ -3,5 +3,5 @@ from apps.services import views
 
 urlpatterns = [
     path("", views.root),
-    path("nfestatusservico/", views.nfe_status_servico, name="services-status"),
+    path("nfestatusservico/", views.NfeStatusServico.as_view(), name="services-status"),
 ]

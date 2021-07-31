@@ -88,11 +88,9 @@ class CertificateAsFile:
 
         tmp = os.fdopen(self.key_fd, "w")
         tmp.write(cert)
-        # print(cert)
 
         tmp = os.fdopen(self.cert_fd, "w")
         tmp.write(key)
-        # print(key)
 
     def __enter__(self):
         return self.key_path, self.cert_path
