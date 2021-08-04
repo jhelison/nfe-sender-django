@@ -34,13 +34,19 @@ class CancelamentoView(APIView):
         
         if serializer.is_valid():
             response = process_cancelamento(
-                
+                base64_certificate=request.user.base64_certificate,
+                certificate_password=request.user.certificate_password,
+                is_hom=request.user.is_hom,
+                xml=serializer.data["xml"],
             )
+            
+            return Response(serializer.errors)
 
 @api_view(["GET"])
 def root_view(request):
     return Response(
         {
-            "autorizacao": reverse("autorizacao", request=request)
+            "autorizacao": reverse("autorizacao", request=request),
+            "cancelamento": reverse("cancelamento", request=request),
         }
     )
