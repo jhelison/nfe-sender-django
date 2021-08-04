@@ -15,7 +15,7 @@ class Signer:
         
         self.is_hom = is_hom
 
-    def sign_nfe(self, xml: str) -> etree.Element:
+    def sign_xml(self, xml: str) -> etree.Element:
         xml_element =  self.remove_signature(etree.fromstring(xml))
         
         if self.is_hom:

@@ -32,17 +32,29 @@ def process_consulta_protocolo(
 def process_autorizacao(
     base64_certificate: str,
     certificate_password: str,
-    NFe: str,
+    xml: str,
     is_hom: bool = True,
 ) -> dict:
     cert = CertificateA1(base64_certificate, certificate_password)
     signer = Signer(cert, is_hom=is_hom)
-    signed_xml = signer.sign_nfe(xml=NFe)
+    signed_xml = signer.sign_nfe(xml=xml)
     
     url, service, root = SefazRequest(is_hom=is_hom).autorizacao(signed_xml)
     
     response = SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
     
     return response
+    
+def process_cancelamento(
+    base64_certificate: str,
+    certificate_password: str,
+    xml: str,
+    is_hom: bool = True,
+) -> dict:
+    cert = CertificateA1(base64_certificate, certificate_password)
+    signer = Signer(cert, is_hom=is_hom)
+    signed_xml = signer.sign_xml(xml=xml)
+    
+    return etree.tostring(signed_xml)
     
     

@@ -1,12 +1,12 @@
 from rest_framework import serializers
 from lxml import etree
 
-class AutorizacaoSerializer(serializers.Serializer):
-    NFe = serializers.CharField()
+class XMLSerializer(serializers.Serializer):
+    xml = serializers.CharField()
     
     def validate(self, data):
         try:
-            etree.fromstring(data["NFe"])
+            etree.fromstring(data["xml"])
             return data
         except:
-            raise serializers.ValidationError("NFe invalida")
+            raise serializers.ValidationError("xml invalido")
