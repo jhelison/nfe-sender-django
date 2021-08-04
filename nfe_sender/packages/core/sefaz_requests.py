@@ -65,11 +65,8 @@ class SefazRequest:
         root.append(self._element_with_text("idLote", str(int(time.time()))))
         root.append(self._element_with_text("indSinc", 0))
         
-        nfe_ele = etree.Element("NFe")
-        nfe_ele.append(NFe)
-        
-        root.append(nfe_ele)
-        
+        root.append(NFe)
+                
         return (URL, SERVICE, root)
     
     @staticmethod
