@@ -2,7 +2,7 @@ from packages.core.certificate import CertificateA1
 from copy import deepcopy
 from lxml import etree
 import signxml
-
+import re
 
 class Signer:
     """Signs a xml file and returns it as a Etree file"""
@@ -13,7 +13,8 @@ class Signer:
         self.private_key = certificate._private_key
         self.password = certificate._password
 
-    def sign_nfe(self, xml_element: etree.Element) -> etree.Element:
+    def sign_nfe(self, xml: str) -> etree.Element:
+        xml_element = etree.fromstring(self.remove_signature(xml))
         clean_tree = self.clean_nfe_tree(xml_element)
 
         signer = signxml.XMLSigner(
@@ -55,3 +56,7 @@ class Signer:
         for element in xml_tree.iter("*"):
             if "infNFe" in str(element.tag):
                 return element.get("Id")
+
+    @staticmethod
+    def remove_signature(xml: str) -> str:
+        return re.sub('<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">([\s\S]*?)</Signature>', '', xml)

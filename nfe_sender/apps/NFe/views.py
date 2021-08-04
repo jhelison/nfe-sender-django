@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from .serializers import AutorizacaoSerializer
+from packages.core.process_request import process_autorizacao
 
 class AutorizacaoView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -13,7 +14,14 @@ class AutorizacaoView(APIView):
         serializer = AutorizacaoSerializer(data=request.data)
         
         if serializer.is_valid():
-            return Response("wow")
+            response = process_autorizacao(
+                base64_certificate=request.user.base64_certificate,
+                certificate_password=request.user.certificate_password,
+                is_hom=request.user.is_hom,
+                NFe=serializer.data["NFe"],
+            )
+            
+            return Response(response)
         
         return Response(serializer.errors)
 
