@@ -1,5 +1,5 @@
 from lxml import etree
-
+import time
 
 class SefazRequest:
     """
@@ -9,47 +9,69 @@ class SefazRequest:
     """
 
     nsmap = {None: "http://www.portalfiscal.inf.br/nfe"}
+    versao = "4.00"
 
-    def __init__(self, hom: bool = True, cUF: int = 21) -> None:
-        self.hom = hom
+    def __init__(self, is_hom: bool = True, cUF: int = 21) -> None:
+        self.is_hom = is_hom
         self.cUF = cUF
 
-    def status_servico(self) -> dict:
+    def status_servico(self) -> list:
         """
         Return Sefaz servies status.
         """
         URL = "https://{}sefazvirtual.fazenda.gov.br/NFeStatusServico4/NFeStatusServico4.asmx?wsdl".format(
-            "hom." if self.hom else ""
+            "hom." if self.is_hom else ""
         )
         SERVICE = "nfeStatusServicoNF"
 
-        root = etree.Element("consStatServ", nsmap=self.nsmap, versao="4.00")
+        root = etree.Element("consStatServ", nsmap=self.nsmap, versao=self.versao)
 
-        root.append(self._element_with_text("tpAmb", 2 if self.hom else 1))
+        root.append(self._element_with_text("tpAmb", 2 if self.is_hom else 1))
         root.append(self._element_with_text("cUF", self.cUF))
         root.append(self._element_with_text("xServ", "STATUS"))
 
         return (URL, SERVICE, root)
 
-    def consulta_protocolo(self, chNFe: str) -> dict:
+    def consulta_protocolo(self, chNFe: str) -> list:
         """
         Returns the status of the set chNFe
         """
 
         URL = "https://{}sefazvirtual.fazenda.gov.br/NFeConsultaProtocolo4/NFeConsultaProtocolo4.asmx?wsdl".format(
-            "hom." if self.hom else ""
+            "hom." if self.is_hom else ""
         )
         SERVICE = "nfeConsultaNF"
 
-        nsmap = {None: "http://www.portalfiscal.inf.br/nfe"}
-        root = etree.Element("consSitNFe", nsmap=self.nsmap, versao="4.00")
+        root = etree.Element("consSitNFe", nsmap=self.nsmap, versao=self.versao)
 
-        root.append(self._element_with_text("tpAmb", 2 if self.hom else 1))
+        root.append(self._element_with_text("tpAmb", 2 if self.is_hom else 1))
         root.append(self._element_with_text("xServ", "CONSULTAR"))
         root.append(self._element_with_text("chNFe", chNFe))
 
         return (URL, SERVICE, root)
-
+    
+    def autorizacao(self, NFe: etree) -> list:
+        """
+        Return the URl, service name and etree to send a NFe
+        """
+        
+        URL = "https://{}sefazvirtual.fazenda.gov.br/NFeAutorizacao4/NFeAutorizacao4.asmx?wsdl".format(
+            "hom." if self.is_hom else ""
+        )
+        SERVICE = "nfeAutorizacaoLote"
+        
+        root = etree.Element("enviNFe", nsmap=self.nsmap, versao=self.versao)
+        
+        root.append(self._element_with_text("idLote", str(int(time.time()))))
+        root.append(self._element_with_text("indSinc", 0))
+        
+        nfe_ele = etree.Element("NFe")
+        nfe_ele.append(NFe)
+        
+        root.append(nfe_ele)
+        
+        return (URL, SERVICE, root)
+    
     @staticmethod
     def _element_with_text(tag: str, text: any) -> etree.Element:
         """
