@@ -11,7 +11,9 @@ def process_status(
     cert = CertificateA1(base64_certificate, certificate_password)
     url, service, root = SefazRequest(is_hom=is_hom).status_servico()
 
-    return SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
+    reponse = SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
+
+    return reponse
 
 
 def process_consulta_protocolo(
@@ -23,7 +25,9 @@ def process_consulta_protocolo(
     cert = CertificateA1(base64_certificate, certificate_password)
     url, service, root = SefazRequest(is_hom=is_hom).consulta_protocolo(chNFe)
 
-    return SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
+    reponse = SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
+
+    return reponse
 
 def process_autorizacao(
     base64_certificate: str,
@@ -32,11 +36,13 @@ def process_autorizacao(
     is_hom: bool = True,
 ) -> dict:
     cert = CertificateA1(base64_certificate, certificate_password)
-    signer = Signer(cert)
-    signed_xml = signer.sign_nfe(NFe)
+    signer = Signer(cert, is_hom=is_hom)
+    signed_xml = signer.sign_nfe(xml=NFe)
     
     url, service, root = SefazRequest(is_hom=is_hom).autorizacao(signed_xml)
     
-    return etree.tostring(root).decode()
+    response = SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
+    
+    return response
     
     

@@ -1,5 +1,5 @@
 from lxml import etree
-import time
+import xmltodict, json, time
 
 class SefazRequest:
     """
@@ -63,7 +63,7 @@ class SefazRequest:
         root = etree.Element("enviNFe", nsmap=self.nsmap, versao=self.versao)
         
         root.append(self._element_with_text("idLote", str(int(time.time()))))
-        root.append(self._element_with_text("indSinc", 0))
+        root.append(self._element_with_text("indSinc", 1))
         
         root.append(NFe)
                 
@@ -84,9 +84,10 @@ class SefazRequest:
         """
         Tranform the childs of the root lxml in a dict, mantaining the structure of their childs.
         """
-        child_dict = {}
+        xparsed = xmltodict.parse(etree.tostring(root))
+        # child_dict = {}
 
-        for child in root:
-            child_dict[etree.QName(child).localname] = child.text
+        # for child in root:
+        #     child_dict[etree.QName(child).localname] = child.text
 
-        return child_dict
+        return xparsed

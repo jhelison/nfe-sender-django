@@ -7,14 +7,20 @@ import re
 class Signer:
     """Signs a xml file and returns it as a Etree file"""
 
-    def __init__(self, certificate: CertificateA1) -> None:
+    def __init__(self, certificate: CertificateA1, is_hom:bool = True) -> None:
         self.certificate = certificate
         self.cert = certificate._certificate
         self.private_key = certificate._private_key
         self.password = certificate._password
+        
+        self.is_hom = is_hom
 
     def sign_nfe(self, xml: str) -> etree.Element:
-        xml_element = etree.fromstring(self.remove_signature(xml))
+        xml_element =  self.remove_signature(etree.fromstring(xml))
+        
+        if self.is_hom:
+            xml_element = self.set_as_hom(xml_element)
+                
         clean_tree = self.clean_nfe_tree(xml_element)
 
         signer = signxml.XMLSigner(
@@ -58,5 +64,25 @@ class Signer:
                 return element.get("Id")
 
     @staticmethod
-    def remove_signature(xml: str) -> str:
-        return re.sub('<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">([\s\S]*?)</Signature>', '', xml)
+    def remove_signature(xml_tree: etree.Element) -> etree.Element:
+        root = xml_tree
+        
+        for child in root:
+            if child.tag.endswith('Signature'):
+                root.remove(child)
+                
+        return root
+    
+    @staticmethod
+    def set_as_hom(xml_tree: etree.Element) -> etree.Element:
+        root = xml_tree
+        
+        for child in root.iter(r'{http://www.portalfiscal.inf.br/nfe}tpAmb'):
+            child.text = "2"
+            
+        for child in root.iter(r'{http://www.portalfiscal.inf.br/nfe}dest'):
+            for grandchild in child.iter(r'{http://www.portalfiscal.inf.br/nfe}xNome'):
+                grandchild.text = "NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL"
+        
+        
+        return root
