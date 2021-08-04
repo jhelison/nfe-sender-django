@@ -10,7 +10,7 @@ from packages.core.process_request import process_status, process_consulta_proto
 # , process_consulta_protocolo
 
 
-class StatusServico(APIView):
+class StatusServicoView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -23,7 +23,7 @@ class StatusServico(APIView):
         return Response(response)
 
 
-class ConsultaProtocolo(APIView):
+class ConsultaProtocoloView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
@@ -43,7 +43,7 @@ class ConsultaProtocolo(APIView):
 
 
 @api_view(["GET"])
-def root(request):
+def root_view(request):
     return Response(
         {
             "status": reverse("services-status", request=request),
