@@ -1,4 +1,5 @@
 from copy import deepcopy
+from typing import Union
 from lxml import etree
 from .signer import Signer, CertificateA1
 import xmltodict
@@ -10,9 +11,12 @@ class XMLParser:
 
     root: etree.Element
 
-    def __init__(self, xml: str) -> None:
-        xml_no_meta = self._remove_metatag(xml)
-        self.root = etree.fromstring(xml_no_meta)
+    def __init__(self, xml: Union[str, etree.Element]) -> None:
+        if isinstance(xml, str):
+            xml_no_meta = self._remove_metatag(xml)
+            self.root = etree.fromstring(xml_no_meta)
+        else:
+            self.root = xml
 
     def remove_signature(self):
         for child in self.root.iter("*"):

@@ -1,8 +1,6 @@
 from packages.core.certificate import CertificateA1
-from copy import deepcopy
 from lxml import etree
 import signxml
-import re
 
 
 class Signer:
