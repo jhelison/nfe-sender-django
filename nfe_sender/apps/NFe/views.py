@@ -8,12 +8,13 @@ from rest_framework.reverse import reverse
 from .serializers import XMLSerializer
 from packages.core.process_request import process_autorizacao, process_cancelamento
 
+
 class AutorizacaoView(APIView):
     permission_classes = (IsAuthenticated,)
-    
+
     def post(self, request):
         serializer = XMLSerializer(data=request.data)
-        
+
         if serializer.is_valid():
             response = process_autorizacao(
                 base64_certificate=request.user.base64_certificate,
@@ -21,17 +22,18 @@ class AutorizacaoView(APIView):
                 is_hom=request.user.is_hom,
                 xml=serializer.data["xml"],
             )
-            
+
             return Response(response)
-        
+
         return Response(serializer.errors)
-    
+
+
 class CancelamentoView(APIView):
     permission_classes = (IsAuthenticated,)
-    
+
     def post(self, request):
         serializer = XMLSerializer(data=request.data)
-        
+
         if serializer.is_valid():
             response = process_cancelamento(
                 base64_certificate=request.user.base64_certificate,
@@ -39,10 +41,11 @@ class CancelamentoView(APIView):
                 is_hom=request.user.is_hom,
                 xml=serializer.data["xml"],
             )
-            
+
             return Response(response)
-            
+
         return Response(serializer.errors)
+
 
 @api_view(["GET"])
 def root_view(request):
