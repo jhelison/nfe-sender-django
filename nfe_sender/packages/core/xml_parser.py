@@ -100,7 +100,7 @@ class NFeParser(XMLParser):
 
     @property
     def is_valid(self) -> bool:
-        return etree.QName(self.root).localname == r"NFe"
+        return etree.QName(self.root).localname == "NFe"
 
 
 class CancelamentoParser(XMLParser):
@@ -116,4 +116,4 @@ class CancelamentoParser(XMLParser):
 
     @property
     def is_valid(self) -> bool:
-        return etree.QName(self.root).localname == r"cancNFe"
+        return etree.QName(self.root).localname == "cancNFe"
