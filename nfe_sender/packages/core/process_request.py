@@ -37,7 +37,7 @@ def process_autorizacao(
 ) -> dict:
     cert = CertificateA1(base64_certificate, certificate_password)
     signer = Signer(cert, is_hom=is_hom)
-    signed_xml = signer.sign_nfe(xml=xml)
+    signed_xml = signer.sign_xml(xml=xml)
     
     url, service, root = SefazRequest(is_hom=is_hom).autorizacao(signed_xml)
     

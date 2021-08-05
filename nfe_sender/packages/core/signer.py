@@ -16,12 +16,7 @@ class Signer:
         self.is_hom = is_hom
 
     def sign_xml(self, xml: str) -> etree.Element:
-        xml_element =  self.remove_signature(etree.fromstring(xml))
-        
-        if self.is_hom:
-            xml_element = self.set_as_hom(xml_element)
-                
-        clean_tree = self.clean_nfe_tree(xml_element)
+        clean_tree = self.clean_xml(xml)
 
         signer = signxml.XMLSigner(
             method=signxml.methods.enveloped,
@@ -35,10 +30,24 @@ class Signer:
             clean_tree,
             key=self.certificate.key,
             cert=self.cert,
-            reference_uri=self.get_uri(clean_tree),
+            reference_uri=self._get_uri(clean_tree),
         )
 
         return signed_root
+    
+    def clean_xml(self, xml: str) -> etree.Element:
+        #Remove xml meta tag
+        xml_no_meta = re.sub('<\?xml([\s\S]*?)\?>', '', xml)
+        xml_element = etree.fromstring(xml_no_meta)
+        
+        xml_element = self.set_as_hom(xml_element)
+        xml_element = self.remove_signature(xml_element)
+        
+        if self.is_nfe(xml_element):
+            xml_element = self.clean_nfe_tree(xml_element)
+            
+        return xml_element
+        
 
     @staticmethod
     def clean_nfe_tree(xml_tree: etree.Element) -> etree.Element:
@@ -58,14 +67,16 @@ class Signer:
         return NFe_root
 
     @staticmethod
-    def get_uri(xml_tree: etree.Element) -> str:
+    def _get_uri(xml_tree: etree.Element) -> str:
         for element in xml_tree.iter("*"):
             if "infNFe" in str(element.tag):
+                return element.get("Id")
+            if "infCanc" in str(element.tag):
                 return element.get("Id")
 
     @staticmethod
     def remove_signature(xml_tree: etree.Element) -> etree.Element:
-        root = xml_tree
+        root = deepcopy(xml_tree)
         
         for child in root:
             if child.tag.endswith('Signature'):
@@ -75,7 +86,7 @@ class Signer:
     
     @staticmethod
     def set_as_hom(xml_tree: etree.Element) -> etree.Element:
-        root = xml_tree
+        root = deepcopy(xml_tree)
         
         for child in root.iter(r'{http://www.portalfiscal.inf.br/nfe}tpAmb'):
             child.text = "2"
@@ -86,3 +97,8 @@ class Signer:
         
         
         return root
+    
+    @staticmethod
+    def is_nfe(xml_tree: etree.Element) -> bool:
+        return xml_tree.tag == "{http://www.portalfiscal.inf.br/nfe}NFe"
+            

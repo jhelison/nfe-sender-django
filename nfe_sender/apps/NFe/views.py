@@ -40,7 +40,9 @@ class CancelamentoView(APIView):
                 xml=serializer.data["xml"],
             )
             
-            return Response(serializer.errors)
+            return Response(response)
+            
+        return Response(serializer.errors)
 
 @api_view(["GET"])
 def root_view(request):

@@ -6,7 +6,9 @@ class XMLSerializer(serializers.Serializer):
     
     def validate(self, data):
         try:
+            print(data["xml"])
             etree.fromstring(data["xml"])
             return data
-        except:
+        except Exception as e:
+            print(e)
             raise serializers.ValidationError("xml invalido")
