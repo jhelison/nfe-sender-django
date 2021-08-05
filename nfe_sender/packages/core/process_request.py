@@ -55,6 +55,10 @@ def process_cancelamento(
     signer = Signer(cert, is_hom=is_hom)
     signed_xml = signer.sign_xml(xml=xml)
     
-    return etree.tostring(signed_xml)
+    url, service, root = SefazRequest(is_hom=is_hom).cancelamento(signed_xml)
+    
+    # response = SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
+    
+    return etree.tostring(root)
     
     

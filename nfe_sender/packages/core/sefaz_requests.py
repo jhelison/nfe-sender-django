@@ -50,7 +50,7 @@ class SefazRequest:
 
         return (URL, SERVICE, root)
     
-    def autorizacao(self, NFe: etree) -> list:
+    def autorizacao(self, xml: etree.Element) -> list:
         """
         Return the URl, service name and etree to send a NFe
         """
@@ -65,9 +65,27 @@ class SefazRequest:
         root.append(self._element_with_text("idLote", str(int(time.time()))))
         root.append(self._element_with_text("indSinc", 1))
         
-        root.append(NFe)
+        root.append(xml)
                 
         return (URL, SERVICE, root)
+    
+    def cancelamento(self, xml: etree.Element) -> list:
+        """
+        Return the URl, service name and etree to cancel a NFe
+        """
+        
+        URL = "https://{}sefazvirtual.fazenda.gov.br/NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx?wsdl".format(
+            "hom." if self.is_hom else ""
+        )
+        SERVICE = "nfeRecepcaoEvento"
+        
+        root = etree.Element("envEvento", nsmap=self.nsmap, versao=self.versao)
+        root.append(self._element_with_text("idLote", str(int(time.time()))))
+        
+        return URL, SERVICE, xml
+        
+        
+        
     
     @staticmethod
     def _element_with_text(tag: str, text: any) -> etree.Element:
@@ -85,9 +103,5 @@ class SefazRequest:
         Tranform the childs of the root lxml in a dict, mantaining the structure of their childs.
         """
         xparsed = xmltodict.parse(etree.tostring(root))
-        # child_dict = {}
-
-        # for child in root:
-        #     child_dict[etree.QName(child).localname] = child.text
 
         return xparsed
