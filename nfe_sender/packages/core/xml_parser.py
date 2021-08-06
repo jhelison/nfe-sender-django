@@ -35,7 +35,7 @@ class XMLParser:
         for child in root.iter("*"):
             if etree.QName(child).localname == "dest":
                 for grandchild in child.iter("*"):
-                    if etree.QName(child).localname == "xNome":
+                    if etree.QName(grandchild).localname == "xNome":
                         grandchild.text = (
                             "NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL"
                         )

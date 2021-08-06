@@ -17,10 +17,8 @@ class AutorizacaoView(APIView):
 
         if serializer.is_valid():
             response = process_autorizacao(
-                base64_certificate=request.user.base64_certificate,
-                certificate_password=request.user.certificate_password,
-                is_hom=request.user.is_hom,
-                xml=serializer.data["xml"],
+                user_data=vars(request.user),
+                xml=serializer.data["xml"]  
             )
 
             return Response(response)
@@ -36,10 +34,8 @@ class CancelamentoView(APIView):
 
         if serializer.is_valid():
             response = process_cancelamento(
-                base64_certificate=request.user.base64_certificate,
-                certificate_password=request.user.certificate_password,
-                is_hom=request.user.is_hom,
-                xml=serializer.data["xml"],
+                user_data=vars(request.user),
+                xml=serializer.data["xml"]
             )
 
             return Response(response)

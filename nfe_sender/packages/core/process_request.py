@@ -1,11 +1,8 @@
 from .certificate import CertificateA1
 from .sefaz_client import SefazClient
 from .sefaz_requests import SefazRequest
-from .signer import Signer
 
-from .xml_parser import XMLParser
-
-from lxml import etree
+from .xml_parser import XMLParser, NFeParser, CancelamentoParser
 
 
 def process_status(user_data: dict) -> dict:
@@ -32,35 +29,34 @@ def process_consulta_protocolo(user_data: dict, chNFe: str) -> dict:
     return reponse.dict
 
 
-def process_autorizacao(
-    base64_certificate: str,
-    certificate_password: str,
-    xml: str,
-    is_hom: bool = True,
-) -> dict:
-    cert = CertificateA1(base64_certificate, certificate_password)
-    signer = Signer(cert, is_hom=is_hom)
-    signed_xml = signer.sign_xml(xml=xml)
+def process_autorizacao(user_data: dict, xml: str) -> dict:
+    cert = CertificateA1(
+        user_data["base64_certificate"], user_data["certificate_password"]
+    )
+    
+    nfe = NFeParser(xml)
+    if user_data["is_hom"]:
+        nfe.set_as_hom()
+    nfe.sign(cert)
 
-    url, service, root = SefazRequest(is_hom=is_hom).autorizacao(signed_xml)
+    url, service, root = SefazRequest(is_hom=user_data["is_hom"]).autorizacao(nfe.root)
+    response = XMLParser(SefazClient(cert).post(url, service, root))
 
-    response = SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
-
-    return response
+    return response.dict
 
 
-def process_cancelamento(
-    base64_certificate: str,
-    certificate_password: str,
-    xml: str,
-    is_hom: bool = True,
-) -> dict:
-    cert = CertificateA1(base64_certificate, certificate_password)
-    signer = Signer(cert, is_hom=is_hom)
-    signed_xml = signer.sign_xml(xml=xml)
+def process_cancelamento(user_data: dict, xml: str) -> dict:
+    cert = CertificateA1(
+        user_data["base64_certificate"], user_data["certificate_password"]
+    )
+        
+    canc = CancelamentoParser(xml)
+    if user_data["is_hom"]:
+        canc.set_as_hom()
+    canc.sign(cert)
 
-    url, service, root = SefazRequest(is_hom=is_hom).cancelamento(signed_xml)
+    # url, service, root = SefazRequest(is_hom=user_data["is_hom"]).cancelamento(signed_xml)
 
     # response = SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
 
-    return etree.tostring(root)
+    return str(canc)
