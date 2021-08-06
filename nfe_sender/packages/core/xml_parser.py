@@ -49,8 +49,11 @@ class XMLParser:
         self.root = Signer(certificate).sign_xml(self.root, self.uri)
 
     @property
-    def uri():
-        raise NotImplementedError
+    def uri(self):
+        for child in self.root.iter("*"):
+            if child.get("Id"):
+                return child.get("Id")
+        return None
 
     @property
     def dict(self):
@@ -77,13 +80,6 @@ class NFeParser(XMLParser):
         super().__init__(xml)
         self._clean_nfe_tree()
 
-    @property
-    def uri(self) -> str:
-        for child in self.root.iter("*"):
-            if etree.QName(child).localname == "infNFe":
-                return child.get("Id")
-        return None
-
     def _clean_nfe_tree(self) -> None:
         xml_tree = deepcopy(self.root)
         nsmap = {None: "http://www.portalfiscal.inf.br/nfe"}
@@ -106,13 +102,6 @@ class NFeParser(XMLParser):
 class CancelamentoParser(XMLParser):
     def __init__(self, xml: str) -> None:
         super().__init__(xml)
-
-    @property
-    def uri(self) -> str:
-        for child in self.root.iter("*"):
-            if etree.QName(child).localname == "infCanc":
-                return child.get("Id")
-        return None
 
     @property
     def is_valid(self) -> bool:
