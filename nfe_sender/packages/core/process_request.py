@@ -3,32 +3,33 @@ from .sefaz_client import SefazClient
 from .sefaz_requests import SefazRequest
 from .signer import Signer
 
+from .xml_parser import XMLParser
+
 from lxml import etree
 
 
-def process_status(
-    base64_certificate: str, certificate_password: str, is_hom: bool = True
-) -> dict:
-    cert = CertificateA1(base64_certificate, certificate_password)
-    url, service, root = SefazRequest(is_hom=is_hom).status_servico()
+def process_status(user_data: dict) -> dict:
+    cert = CertificateA1(
+        user_data["base64_certificate"], user_data["certificate_password"]
+    )
+    url, service, root = SefazRequest(is_hom=user_data["is_hom"]).status_servico()
 
-    reponse = SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
+    reponse = XMLParser((SefazClient(cert).post(url, service, root)))
 
-    return reponse
+    return reponse.dict
 
 
-def process_consulta_protocolo(
-    base64_certificate: str,
-    certificate_password: str,
-    chNFe: str,
-    is_hom: bool = True,
-) -> dict:
-    cert = CertificateA1(base64_certificate, certificate_password)
-    url, service, root = SefazRequest(is_hom=is_hom).consulta_protocolo(chNFe)
+def process_consulta_protocolo(user_data: dict, chNFe: str) -> dict:
+    cert = CertificateA1(
+        user_data["base64_certificate"], user_data["certificate_password"]
+    )
+    url, service, root = SefazRequest(is_hom=user_data["is_hom"]).consulta_protocolo(
+        chNFe
+    )
 
-    reponse = SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
+    reponse = XMLParser((SefazClient(cert).post(url, service, root)))
 
-    return reponse
+    return reponse.dict
 
 
 def process_autorizacao(

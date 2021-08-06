@@ -14,11 +14,7 @@ class StatusServicoView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        response = process_status(
-            base64_certificate=request.user.base64_certificate,
-            certificate_password=request.user.certificate_password,
-            is_hom=request.user.is_hom,
-        )
+        response = process_status(user_data=vars(request.user))
 
         return Response(response)
 
@@ -31,9 +27,7 @@ class ConsultaProtocoloView(APIView):
 
         if serializer.is_valid():
             response = process_consulta_protocolo(
-                base64_certificate=request.user.base64_certificate,
-                certificate_password=request.user.certificate_password,
-                is_hom=request.user.is_hom,
+                user_data=vars(request.user),
                 chNFe=serializer.data["chNFe"],
             )
 
