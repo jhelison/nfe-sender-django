@@ -1,5 +1,8 @@
 from lxml import etree
-import xmltodict, json, time
+import time
+from datetime import datetime
+
+from packages.core.xml_parser import CancelamentoParser
 
 
 class SefazRequest:
@@ -70,7 +73,7 @@ class SefazRequest:
 
         return (URL, SERVICE, root)
 
-    def cancelamento(self, xml: etree.Element) -> list:
+    def cancelamento(self, canc: CancelamentoParser, user_data: dict) -> list:
         """
         Return the URl, service name and etree to cancel a NFe
         """
@@ -83,7 +86,35 @@ class SefazRequest:
         root = etree.Element("envEvento", nsmap=self.nsmap, versao=self.versao)
         root.append(self._element_with_text("idLote", str(int(time.time()))))
 
-        return URL, SERVICE, xml
+        evento = etree.Element("evento", nsmap=self.nsmap, versao=self.versao)
+        infEvento = etree.Element("infEvento", Id="ID" + "110111" + canc.chNFe + "01")
+        infEvento.append(
+            self._element_with_text(
+                "cOrgao", user_data["uf"] if user_data["uf"] else 21
+            )
+        )
+        infEvento.append(
+            self._element_with_text("tpAmb", 2 if user_data["is_hom"] else 1)
+        )
+        infEvento.append(self._element_with_text("CNPJ", user_data["username"]))
+        infEvento.append(self._element_with_text("chNFe", canc.chNFe))
+        infEvento.append(
+            self._element_with_text(
+                "dhEvento", datetime.strftime(datetime.now(), "%Y-%m-%dT%H:%M:%S-03:00")
+            )
+        )
+        infEvento.append(self._element_with_text("tpEvento", "110111"))
+        infEvento.append(self._element_with_text("nSeqEvento", "1"))
+        infEvento.append(self._element_with_text("verEvento", "1.00"))
+        detEvento = etree.Element("detEvento", versao=self.versao)
+        detEvento.append(self._element_with_text("descEvento", "Cancelamento"))
+        detEvento.append(self._element_with_text("nProt", canc.nProt))
+        detEvento.append(self._element_with_text("xJust", canc.xJust))
+        infEvento.append(detEvento)
+        evento.append(infEvento)
+        root.append(evento)
+
+        return URL, SERVICE, root
 
     @staticmethod
     def _element_with_text(tag: str, text: any) -> etree.Element:

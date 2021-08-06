@@ -33,7 +33,7 @@ def process_autorizacao(user_data: dict, xml: str) -> dict:
     cert = CertificateA1(
         user_data["base64_certificate"], user_data["certificate_password"]
     )
-    
+
     nfe = NFeParser(xml)
     if user_data["is_hom"]:
         nfe.set_as_hom()
@@ -49,14 +49,18 @@ def process_cancelamento(user_data: dict, xml: str) -> dict:
     cert = CertificateA1(
         user_data["base64_certificate"], user_data["certificate_password"]
     )
-        
+
     canc = CancelamentoParser(xml)
     if user_data["is_hom"]:
         canc.set_as_hom()
     canc.sign(cert)
 
-    # url, service, root = SefazRequest(is_hom=user_data["is_hom"]).cancelamento(signed_xml)
+    url, service, root = SefazRequest(is_hom=user_data["is_hom"]).cancelamento(
+        canc=canc, user_data=user_data
+    )
+
+    root = XMLParser(root)
 
     # response = SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
 
-    return str(canc)
+    return root.dict

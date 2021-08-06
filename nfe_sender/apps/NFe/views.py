@@ -17,8 +17,7 @@ class AutorizacaoView(APIView):
 
         if serializer.is_valid():
             response = process_autorizacao(
-                user_data=vars(request.user),
-                xml=serializer.data["xml"]  
+                user_data=vars(request.user), xml=serializer.data["xml"]
             )
 
             return Response(response)
@@ -34,8 +33,7 @@ class CancelamentoView(APIView):
 
         if serializer.is_valid():
             response = process_cancelamento(
-                user_data=vars(request.user),
-                xml=serializer.data["xml"]
+                user_data=vars(request.user), xml=serializer.data["xml"]
             )
 
             return Response(response)

@@ -117,3 +117,24 @@ class CancelamentoParser(XMLParser):
     @property
     def is_valid(self) -> bool:
         return etree.QName(self.root).localname == "cancNFe"
+
+    @property
+    def chNFe(self) -> str:
+        for child in self.root.iter("*"):
+            if etree.QName(child).localname == "chNFe":
+                return child.text
+        return None
+
+    @property
+    def nProt(self) -> str:
+        for child in self.root.iter("*"):
+            if etree.QName(child).localname == "nProt":
+                return child.text
+        return None
+
+    @property
+    def xJust(self) -> str:
+        for child in self.root.iter("*"):
+            if etree.QName(child).localname == "xJust":
+                return child.text
+        return None
