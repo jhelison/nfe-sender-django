@@ -46,7 +46,22 @@ class XMLParser:
     def sign(self, certificate: CertificateA1) -> None:
         self.remove_signature()
 
-        self.root = Signer(certificate).sign_xml(self.root, self.uri)
+        self.root = Signer(certificate).sign_xml(xml=self.root, uri=self.uri)
+
+    def get_text_from_tag(self, tag: str):
+        for child in self.root.iter("*"):
+            if etree.QName(child).localname == tag:
+                return child.text
+        return None
+
+    def child_XMLParser(self, tag: str):
+        """
+        Return a XMLParser with the found child tag.
+        """
+        for child in self.root.iter("*"):
+            if etree.QName(child).localname == tag:
+                return XMLParser(child)
+        return None
 
     @property
     def uri(self):
@@ -99,10 +114,11 @@ class NFeParser(XMLParser):
         return etree.QName(self.root).localname == "NFe"
 
 
-class CancelamentoParser(XMLParser):
+class EventoParser(XMLParser):
     def __init__(self, xml: str) -> None:
         super().__init__(xml)
-
+        
+        
     @property
     def is_valid(self) -> bool:
         return etree.QName(self.root).localname == "cancNFe"

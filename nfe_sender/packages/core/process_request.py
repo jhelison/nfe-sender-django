@@ -60,9 +60,9 @@ def process_cancelamento(user_data: dict, xml: str) -> dict:
     if user_data["is_hom"]:
         evento.set_as_hom()
     evento.sign(cert)
-        
+
     root.append(evento.root)
-    
+
     root = XMLParser(root)
 
     response = XMLParser(SefazClient(cert).post(url, service, root.root))
