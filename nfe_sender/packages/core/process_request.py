@@ -51,16 +51,20 @@ def process_cancelamento(user_data: dict, xml: str) -> dict:
     )
 
     canc = CancelamentoParser(xml)
-    if user_data["is_hom"]:
-        canc.set_as_hom()
-    canc.sign(cert)
 
-    url, service, root = SefazRequest(is_hom=user_data["is_hom"]).cancelamento(
+    url, service, root, evento = SefazRequest(is_hom=user_data["is_hom"]).cancelamento(
         canc=canc, user_data=user_data
     )
 
+    evento = XMLParser(evento)
+    if user_data["is_hom"]:
+        evento.set_as_hom()
+    evento.sign(cert)
+        
+    root.append(evento.root)
+    
     root = XMLParser(root)
 
-    # response = SefazRequest.response_to_dict(SefazClient(cert).post(url, service, root))
+    response = XMLParser(SefazClient(cert).post(url, service, root.root))
 
-    return root.dict
+    return response.dict

@@ -83,10 +83,10 @@ class SefazRequest:
         )
         SERVICE = "nfeRecepcaoEvento"
 
-        root = etree.Element("envEvento", nsmap=self.nsmap, versao=self.versao)
+        root = etree.Element("envEvento", nsmap=self.nsmap, versao="1.00")
         root.append(self._element_with_text("idLote", str(int(time.time()))))
 
-        evento = etree.Element("evento", nsmap=self.nsmap, versao=self.versao)
+        evento = etree.Element("evento", nsmap=self.nsmap, versao="1.00")
         infEvento = etree.Element("infEvento", Id="ID" + "110111" + canc.chNFe + "01")
         infEvento.append(
             self._element_with_text(
@@ -106,15 +106,14 @@ class SefazRequest:
         infEvento.append(self._element_with_text("tpEvento", "110111"))
         infEvento.append(self._element_with_text("nSeqEvento", "1"))
         infEvento.append(self._element_with_text("verEvento", "1.00"))
-        detEvento = etree.Element("detEvento", versao=self.versao)
+        detEvento = etree.Element("detEvento", versao="1.00")
         detEvento.append(self._element_with_text("descEvento", "Cancelamento"))
         detEvento.append(self._element_with_text("nProt", canc.nProt))
         detEvento.append(self._element_with_text("xJust", canc.xJust))
         infEvento.append(detEvento)
         evento.append(infEvento)
-        root.append(evento)
 
-        return URL, SERVICE, root
+        return URL, SERVICE, root, evento
 
     @staticmethod
     def _element_with_text(tag: str, text: any) -> etree.Element:
