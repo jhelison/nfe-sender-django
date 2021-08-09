@@ -79,7 +79,7 @@ def process_carta(user_data: dict, xml: str) -> dict:
         is_hom=user_data["is_hom"]
     )
     
-    evento.sign(cert)
+    # evento.sign(cert)
     
     url, service, root = SefazRequest(is_hom=user_data["is_hom"]).recepcao_evento(
         evento=evento.root
@@ -87,6 +87,8 @@ def process_carta(user_data: dict, xml: str) -> dict:
 
     # response = XMLParser(SefazClient(cert).post(url, service, root))
     
-    root = XMLParser(root)
-
-    return str(root)
+    # root = XMLParser(root)
+    
+    print(evento)
+    
+    # return response.dict

@@ -142,7 +142,8 @@ class EventoParser(XMLParser):
             uf=uf,
             is_hom=is_hom,
             det_evento=det_evento,
-            nsmap=cls.nsmap
+            nsmap=cls.nsmap,
+            tp_evento="110111"
         )
 
         return EventoParser(evento)
@@ -152,7 +153,8 @@ class EventoParser(XMLParser):
         carta = XMLParser(xml)
 
         ch_nfe = carta.find_text_from_tag("ChaveAcesso")
-        x_correcao = carta.find_text_from_tag("Correcao")
+        # x_correcao = carta.find_text_from_tag("Correcao")
+        x_correcao = "asdklsdklçfjasd asdlkjf lçaskdjf asdlç kfjasdlçkfj"
 
         det_evento = etree.Element("detEvento", versao="1.00")
         det_evento.append(el_with_text("descEvento", "Carta de Correcao"))
@@ -170,7 +172,8 @@ class EventoParser(XMLParser):
             uf=uf,
             is_hom=is_hom,
             det_evento=det_evento,
-            nsmap=cls.nsmap
+            nsmap=cls.nsmap,
+            tp_evento="110110"
         )
         
         return EventoParser(evento)
@@ -181,12 +184,12 @@ class EventoParser(XMLParser):
         cnpj: str,
         det_evento: etree.Element,
         nsmap: dict,
+        tp_evento: str,
         uf: int = 21,
         is_hom: bool = True,
     ):
         tp_amb = 2 if is_hom else 1
         dh_evento = datetime.strftime(datetime.now(), "%Y-%m-%dT%H:%M:%S-03:00")
-        tp_evento = "110111"
         n_seq_evento = "01"
 
         id = "ID" + tp_evento + chNFe + n_seq_evento
