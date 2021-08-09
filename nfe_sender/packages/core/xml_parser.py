@@ -91,7 +91,7 @@ class XMLParser:
         return re.sub(r"<\?xml([\s\S]*?)\?>", "", xml)
 
     def __repr__(self) -> str:
-        return etree.tostring(self.root).decode()
+        return etree.tostring(self.root, encoding='UTF-8').decode()
 
 
 class NFeParser(XMLParser):
