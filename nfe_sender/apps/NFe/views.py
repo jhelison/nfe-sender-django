@@ -39,6 +39,18 @@ class CancelamentoView(APIView):
 
         return Response(serializer.errors)
 
+class CartaView(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request):
+        serializer = XMLSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            response = process_cancelamento(
+                user_data=vars(request.user), xml=serializer.data["xml"]
+            )
+            
+        return Response(serializer.errors)
 
 @api_view(["GET"])
 def root_view(request):
@@ -46,5 +58,6 @@ def root_view(request):
         {
             "autorizacao": reverse("autorizacao", request=request),
             "cancelamento": reverse("cancelamento", request=request),
+            "carta correção": reverse("carta-correcao", request=request),
         }
     )
