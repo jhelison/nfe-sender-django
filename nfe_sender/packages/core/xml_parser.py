@@ -147,7 +147,8 @@ class EventoParser(XMLParser):
 
         return EventoParser(evento)
 
-    def evento_from_carta(self, xml: str, cnpj: str, uf: str = 21, is_hom: bool = True) -> EventoParser:
+    @classmethod
+    def evento_from_carta(cls, xml: str, cnpj: str, uf: str = 21, is_hom: bool = True) -> EventoParser:
         carta = XMLParser(xml)
 
         ch_nfe = carta.find_text_from_tag("ChaveAcesso")
@@ -163,12 +164,13 @@ class EventoParser(XMLParser):
             )
         )
         
-        evento = self.build_evento(
+        evento = cls.build_evento(
             chNFe=ch_nfe,
             cnpj=cnpj,
             uf=uf,
             is_hom=is_hom,
             det_evento=det_evento,
+            nsmap=cls.nsmap
         )
         
         return EventoParser(evento)
