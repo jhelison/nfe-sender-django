@@ -2,7 +2,7 @@ from .certificate import CertificateA1
 from .sefaz_client import SefazClient
 from .sefaz_requests import SefazRequest
 
-from .xml_parser import XMLParser, NFeParser, CancelamentoParser
+from .xml_parser import XMLParser, NFeParser, EventoParser
 
 
 def process_status(user_data: dict) -> dict:
@@ -50,21 +50,19 @@ def process_cancelamento(user_data: dict, xml: str) -> dict:
         user_data["base64_certificate"], user_data["certificate_password"]
     )
 
-    canc = CancelamentoParser(xml)
-
-    url, service, root, evento = SefazRequest(is_hom=user_data["is_hom"]).cancelamento(
-        canc=canc, user_data=user_data
+    evento = EventoParser.evento_from_cancelamento(
+        xml=xml,
+        cnpj=user_data["username"],
+        uf=user_data['uf'],
+        is_hom=user_data["is_hom"]
     )
-
-    evento = XMLParser(evento)
-    if user_data["is_hom"]:
-        evento.set_as_hom()
+    
     evento.sign(cert)
 
-    root.append(evento.root)
+    url, service, root = SefazRequest(is_hom=user_data["is_hom"]).recepcao_evento(
+        evento=evento.root
+    )
 
-    root = XMLParser(root)
-
-    response = XMLParser(SefazClient(cert).post(url, service, root.root))
+    response = XMLParser(SefazClient(cert).post(url, service, root))
 
     return response.dict

@@ -101,8 +101,7 @@ class NFeParser(XMLParser):
 
     def _clean_nfe_tree(self) -> None:
         xml_tree = deepcopy(self.root)
-        nsmap = {None: "http://www.portalfiscal.inf.br/nfe"}
-        NFe_root = etree.Element("NFe", nsmap=nsmap)
+        NFe_root = etree.Element("NFe", nsmap=self.nsmap)
 
         for child in xml_tree:
             NFe_root.append(child)
@@ -143,12 +142,12 @@ class EventoParser(XMLParser):
             uf=uf,
             is_hom=is_hom,
             det_evento=det_evento,
+            nsmap=cls.nsmap
         )
 
         return EventoParser(evento)
 
-    @classmethod
-    def evento_from_carta(cls, xml: str, cnpj: str, uf: str = 21, is_hom: bool = True) -> EventoParser:
+    def evento_from_carta(self, xml: str, cnpj: str, uf: str = 21, is_hom: bool = True) -> EventoParser:
         carta = XMLParser(xml)
 
         ch_nfe = carta.find_text_from_tag("ChaveAcesso")
@@ -164,7 +163,7 @@ class EventoParser(XMLParser):
             )
         )
         
-        evento = cls.build_evento(
+        evento = self.build_evento(
             chNFe=ch_nfe,
             cnpj=cnpj,
             uf=uf,
@@ -174,22 +173,23 @@ class EventoParser(XMLParser):
         
         return EventoParser(evento)
 
+    @staticmethod
     def build_evento(
-        self,
         chNFe: str,
         cnpj: str,
         det_evento: etree.Element,
+        nsmap: dict,
         uf: int = 21,
         is_hom: bool = True,
     ):
         tp_amb = 2 if is_hom else 1
         dh_evento = datetime.strftime(datetime.now(), "%Y-%m-%dT%H:%M:%S-03:00")
         tp_evento = "110111"
-        n_seq_evento = "1"
+        n_seq_evento = "01"
 
         id = "ID" + tp_evento + chNFe + n_seq_evento
 
-        evento = etree.Element("evento", nsmap=self.nsmap, versao="1.00")
+        evento = etree.Element("evento", nsmap=nsmap, versao="1.00")
         inf_evento = etree.Element("infEvento", Id=id)
         inf_evento.append(el_with_text("cOrgao", uf))
         inf_evento.append(el_with_text("tpAmb", tp_amb))

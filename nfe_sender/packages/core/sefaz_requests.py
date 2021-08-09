@@ -72,7 +72,7 @@ class SefazRequest:
 
         return (URL, SERVICE, root)
 
-    def RecepcaoEvento(self, evento: etree.Element) -> list:
+    def recepcao_evento(self, evento: etree.Element) -> list:
         URL = "https://{}sefazvirtual.fazenda.gov.br/NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx?wsdl".format(
             "hom." if self.is_hom else ""
         )
@@ -82,4 +82,4 @@ class SefazRequest:
         root.append(el_with_text("idLote", str(int(time.time()))))
         root.append(evento)
 
-        return URL, SERVICE, root, evento
+        return URL, SERVICE, root

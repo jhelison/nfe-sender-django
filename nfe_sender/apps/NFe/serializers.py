@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from packages.core.xml_parser import NFeParser, CancelamentoParser
+from packages.core.xml_parser import NFeParser, XMLParser
 
 
 def validate_NFe(value):
@@ -18,7 +18,7 @@ class XMLSerializer(serializers.Serializer):
 
 def validade_cancelamento(value):
     try:
-        canc = CancelamentoParser(value)
+        canc = XMLParser(value)
     except:
         serializers.ValidationError("Erro ao ler xml")
 
