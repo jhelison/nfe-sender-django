@@ -124,7 +124,7 @@ class EventoParser(XMLParser):
     @classmethod
     def evento_from_cancelamento(
         cls, xml: str, cnpj: str, uf: str = 21, is_hom: bool = True
-    ) -> EventoParser:
+    ) -> XMLParser:
         canc = XMLParser(xml)
 
         n_prot = canc.find_text_from_tag("nProt")
@@ -146,15 +146,14 @@ class EventoParser(XMLParser):
             tp_evento="110111"
         )
 
-        return EventoParser(evento)
+        return XMLParser(evento)
 
     @classmethod
-    def evento_from_carta(cls, xml: str, cnpj: str, uf: str = 21, is_hom: bool = True) -> EventoParser:
+    def evento_from_carta(cls, xml: str, cnpj: str, uf: str = 21, is_hom: bool = True) -> XMLParser:
         carta = XMLParser(xml)
 
         ch_nfe = carta.find_text_from_tag("ChaveAcesso")
-        # x_correcao = carta.find_text_from_tag("Correcao")
-        x_correcao = "asdklsdklçfjasd asdlkjf lçaskdjf asdlç kfjasdlçkfj"
+        x_correcao = carta.find_text_from_tag("Correcao")
 
         det_evento = etree.Element("detEvento", versao="1.00")
         det_evento.append(el_with_text("descEvento", "Carta de Correcao"))
@@ -176,7 +175,7 @@ class EventoParser(XMLParser):
             tp_evento="110110"
         )
         
-        return EventoParser(evento)
+        return XMLParser(evento)
 
     @staticmethod
     def build_evento(
