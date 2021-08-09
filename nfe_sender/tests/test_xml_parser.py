@@ -3,6 +3,7 @@ from packages.core.xml_parser import NFeParser
 nfe_str = open(r"nfe_sender\tests\nfe_signed.xml", "r").read()
 dev_str = open(r"nfe_sender\tests\dev.xml", "r").read()
 
+
 class TestNFeParser:
 
     nfe = NFeParser(nfe_str)
