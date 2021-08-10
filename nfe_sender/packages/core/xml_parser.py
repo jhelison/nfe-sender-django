@@ -91,7 +91,7 @@ class XMLParser:
         return re.sub(r"<\?xml([\s\S]*?)\?>", "", xml)
 
     def __repr__(self) -> str:
-        return etree.tostring(self.root, encoding='UTF-8').decode()
+        return etree.tostring(self.root, encoding="UTF-8").decode()
 
 
 class NFeParser(XMLParser):
@@ -143,13 +143,15 @@ class EventoParser(XMLParser):
             is_hom=is_hom,
             det_evento=det_evento,
             nsmap=cls.nsmap,
-            tp_evento="110111"
+            tp_evento="110111",
         )
 
         return XMLParser(evento)
 
     @classmethod
-    def evento_from_carta(cls, xml: str, cnpj: str, uf: str = 21, is_hom: bool = True) -> XMLParser:
+    def evento_from_carta(
+        cls, xml: str, cnpj: str, uf: str = 21, is_hom: bool = True
+    ) -> XMLParser:
         carta = XMLParser(xml)
 
         ch_nfe = carta.find_text_from_tag("ChaveAcesso")
@@ -164,7 +166,7 @@ class EventoParser(XMLParser):
                 "A Carta de Correcao e disciplinada pelo paragrafo 1o-A do art. 7o do Convenio S/N, de 15 de dezembro de 1970 e pode ser utilizada para regularizacao de erro ocorrido na emissao de documento fiscal, desde que o erro nao esteja relacionado com: I - as variaveis que determinam o valor do imposto tais como: base de calculo, aliquota, diferenca de preco, quantidade, valor da operacao ou da prestacao; II - a correcao de dados cadastrais que implique mudanca do remetente ou do destinatario; III - a data de emissao ou de saida.",
             )
         )
-        
+
         evento = cls.build_evento(
             chNFe=ch_nfe,
             cnpj=cnpj,
@@ -172,9 +174,9 @@ class EventoParser(XMLParser):
             is_hom=is_hom,
             det_evento=det_evento,
             nsmap=cls.nsmap,
-            tp_evento="110110"
+            tp_evento="110110",
         )
-        
+
         return XMLParser(evento)
 
     @staticmethod

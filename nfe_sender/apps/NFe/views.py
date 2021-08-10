@@ -5,7 +5,11 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from .serializers import XMLSerializer
-from packages.core.process_request import process_autorizacao, process_cancelamento, process_carta
+from packages.core.process_request import (
+    process_autorizacao,
+    process_cancelamento,
+    process_carta,
+)
 
 
 class AutorizacaoView(APIView):
@@ -39,20 +43,22 @@ class CancelamentoView(APIView):
 
         return Response(serializer.errors)
 
+
 class CartaView(APIView):
     permission_classes = (IsAuthenticated,)
-    
+
     def post(self, request):
         serializer = XMLSerializer(data=request.data)
-        
+
         if serializer.is_valid():
             response = process_carta(
                 user_data=vars(request.user), xml=serializer.data["xml"]
             )
-            
+
             return Response(response)
-            
+
         return Response(serializer.errors)
+
 
 @api_view(["GET"])
 def root_view(request):

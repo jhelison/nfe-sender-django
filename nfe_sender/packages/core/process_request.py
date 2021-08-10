@@ -53,10 +53,10 @@ def process_cancelamento(user_data: dict, xml: str) -> dict:
     evento = EventoParser.evento_from_cancelamento(
         xml=xml,
         cnpj=user_data["username"],
-        uf=user_data['uf'],
-        is_hom=user_data["is_hom"]
+        uf=user_data["uf"],
+        is_hom=user_data["is_hom"],
     )
-    
+
     evento.sign(cert)
 
     url, service, root = SefazRequest(is_hom=user_data["is_hom"]).recepcao_evento(
@@ -67,25 +67,25 @@ def process_cancelamento(user_data: dict, xml: str) -> dict:
 
     return response.dict
 
+
 def process_carta(user_data: dict, xml: str) -> dict:
     cert = CertificateA1(
         user_data["base64_certificate"], user_data["certificate_password"]
     )
-    
+
     evento = EventoParser.evento_from_carta(
         xml=xml,
         cnpj=user_data["username"],
-        uf=user_data['uf'],
-        is_hom=user_data["is_hom"]
+        uf=user_data["uf"],
+        is_hom=user_data["is_hom"],
     )
-    
+
     evento.sign(cert)
-    
+
     url, service, root = SefazRequest(is_hom=user_data["is_hom"]).recepcao_evento(
         evento=evento.root
     )
 
     response = XMLParser(SefazClient(cert).post(url, service, root))
-    
-        
+
     return response.dict
