@@ -1,3 +1,4 @@
+from copy import deepcopy
 from lxml import etree
 import time
 
@@ -68,7 +69,7 @@ class SefazRequest:
         root.append(el_with_text("idLote", str(int(time.time()))))
         root.append(el_with_text("indSinc", 1))
 
-        root.append(xml)
+        root.append(deepcopy(xml))
 
         return (URL, SERVICE, root)
 
@@ -80,6 +81,6 @@ class SefazRequest:
 
         root = etree.Element("envEvento", nsmap=self.nsmap, versao="1.00")
         root.append(el_with_text("idLote", str(int(time.time()))))
-        root.append(evento)
+        root.append(deepcopy(evento))
 
         return URL, SERVICE, root

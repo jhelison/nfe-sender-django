@@ -2,7 +2,7 @@ from .certificate import CertificateA1
 from .sefaz_client import SefazClient
 from .sefaz_requests import SefazRequest
 
-from .xml_parser import XMLParser, NFeParser, EventoParser
+from .xml_parser import XMLParser, NFeParser, EventoParser, ReponseParser
 
 
 def process_status(user_data: dict) -> dict:
@@ -40,9 +40,9 @@ def process_autorizacao(user_data: dict, xml: str) -> dict:
     nfe.sign(cert)
 
     url, service, root = SefazRequest(is_hom=user_data["is_hom"]).autorizacao(nfe.root)
-    response = XMLParser(SefazClient(cert).post(url, service, root))
+    response = SefazClient(cert).post(url, service, root)
 
-    return response.dict
+    return ReponseParser(response, nfe).nfe_response()
 
 
 def process_cancelamento(user_data: dict, xml: str) -> dict:

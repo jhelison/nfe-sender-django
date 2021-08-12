@@ -7,6 +7,7 @@ def validate_NFe(value):
         nfe = NFeParser(value)
     except:
         serializers.ValidationError("Erro ao ler xml")
+        return
 
     if not nfe.is_valid:
         serializers.ValidationError("NFe invalida")
@@ -21,6 +22,7 @@ def validade_cancelamento(value):
         canc = XMLParser(value)
     except:
         serializers.ValidationError("Erro ao ler xml")
+        return
 
     if not canc.is_valid:
         serializers.ValidationError("Cancelamento invalido")

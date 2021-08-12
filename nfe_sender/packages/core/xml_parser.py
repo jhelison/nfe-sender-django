@@ -8,11 +8,10 @@ from json import loads, dumps
 import re
 from datetime import datetime
 
+NSMAP = {None: "http://www.portalfiscal.inf.br/nfe"}
+
 
 class XMLParser:
-
-    nsmap = {None: "http://www.portalfiscal.inf.br/nfe"}
-
     root: etree.Element
 
     def __init__(self, xml: Union[str, etree.Element]) -> None:
@@ -85,6 +84,15 @@ class XMLParser:
         xparsed = xmltodict.parse(etree.tostring(root))
 
         return loads(dumps(xparsed))
+    
+    def remove_namespaces(self):
+        root = deepcopy(self.root)
+        for child in root.getiterator():
+            child.tag = etree.QName(child).localname
+        etree.cleanup_namespaces(root)
+        
+        self.root = root
+
 
     @staticmethod
     def _remove_metatag(xml: str) -> str:
@@ -101,7 +109,7 @@ class NFeParser(XMLParser):
 
     def _clean_nfe_tree(self) -> None:
         xml_tree = deepcopy(self.root)
-        NFe_root = etree.Element("NFe", nsmap=self.nsmap)
+        NFe_root = etree.Element("NFe", nsmap=NSMAP)
 
         for child in xml_tree:
             NFe_root.append(child)
@@ -142,7 +150,6 @@ class EventoParser(XMLParser):
             uf=uf,
             is_hom=is_hom,
             det_evento=det_evento,
-            nsmap=cls.nsmap,
             tp_evento="110111",
         )
 
@@ -173,7 +180,6 @@ class EventoParser(XMLParser):
             uf=uf,
             is_hom=is_hom,
             det_evento=det_evento,
-            nsmap=cls.nsmap,
             tp_evento="110110",
         )
 
@@ -184,7 +190,6 @@ class EventoParser(XMLParser):
         chNFe: str,
         cnpj: str,
         det_evento: etree.Element,
-        nsmap: dict,
         tp_evento: str,
         uf: int = 21,
         is_hom: bool = True,
@@ -195,7 +200,7 @@ class EventoParser(XMLParser):
 
         id = "ID" + tp_evento + chNFe + n_seq_evento
 
-        evento = etree.Element("evento", nsmap=nsmap, versao="1.00")
+        evento = etree.Element("evento", nsmap=NSMAP, versao="1.00")
         inf_evento = etree.Element("infEvento", Id=id)
         inf_evento.append(el_with_text("cOrgao", uf))
         inf_evento.append(el_with_text("tpAmb", tp_amb))
@@ -209,6 +214,50 @@ class EventoParser(XMLParser):
         evento.append(inf_evento)
 
         return evento
+
+
+class ReponseParser:
+    def __init__(self, response: etree.Element, xml_signed: XMLParser) -> None:
+        self.response = XMLParser(response)
+        self.xml_signed = xml_signed
+
+    def lote_status(self):
+        return self.response.find_text_from_tag("cStat")
+
+    def x_motivo(self):
+        return self.response.find_text_from_tag("xMotivo")
+    
+    def nfe_response(self):
+        self.response.remove_namespaces()
+        
+        if self.lote_status():
+            prot_nfe = self.response.child_XMLParser("protNFe")
+
+            return {
+                "lote_status": self.lote_status(),
+                "lote_motivo": self.x_motivo(),
+                "nfe_is_sucess": prot_nfe.find_text_from_tag("cStat") == "100",
+                "nfe_status": prot_nfe.find_text_from_tag("cStat"),
+                "nfe_motivo": prot_nfe.find_text_from_tag("xMotivo"),
+                **self.response.dict,
+                "nfe-ret": str(self.response),
+                "nfe-sign": str(self.xml_signed),
+                "proc-nfe": self._get_proc_nfe(prot_nfe=prot_nfe),
+            }
+        else:            
+            return {
+                "lote_status": self.lote_status(),
+                **self.response.dict,
+                "nfe-ret": str(self.response),
+                "nfe-sign": str(self.xml_signed),
+            }
+
+    def _get_proc_nfe(self, prot_nfe: XMLParser):
+        xml_signed = str(self.xml_signed)
+        prot_nfe = str(prot_nfe.child_XMLParser("protNFe"))
+        
+        proc_nfe = f'<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">{xml_signed}{prot_nfe}</nfeProc>'
+        return proc_nfe
 
 
 def el_with_text(tag: str, text: any) -> etree.Element:
