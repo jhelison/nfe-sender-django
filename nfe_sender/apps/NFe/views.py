@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from .serializers import XMLSerializer
+from .serializers import NFESerializer, CancelamentoSerializer, CartaSerializer
 from packages.core.process_request import (
     process_autorizacao,
     process_cancelamento,
@@ -16,7 +16,7 @@ class AutorizacaoView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        serializer = XMLSerializer(data=request.data)
+        serializer = NFESerializer(data=request.data)
 
         if serializer.is_valid():
             response = process_autorizacao(
@@ -32,7 +32,7 @@ class CancelamentoView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        serializer = XMLSerializer(data=request.data)
+        serializer = CancelamentoSerializer(data=request.data)
 
         if serializer.is_valid():
             response = process_cancelamento(
@@ -48,7 +48,7 @@ class CartaView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        serializer = XMLSerializer(data=request.data)
+        serializer = CartaSerializer(data=request.data)
 
         if serializer.is_valid():
             response = process_carta(

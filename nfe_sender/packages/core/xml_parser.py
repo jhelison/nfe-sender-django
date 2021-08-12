@@ -120,7 +120,6 @@ class NFeParser(XMLParser):
 
         self.root = NFe_root
 
-    @property
     def is_valid(self) -> bool:
         return etree.QName(self.root).localname == "NFe"
 
@@ -128,6 +127,25 @@ class NFeParser(XMLParser):
 class EventoParser(XMLParser):
     def __init__(self, xml: str) -> None:
         super().__init__(xml)
+        
+    @staticmethod
+    def cancelamento_is_valid(xml: str):
+        canc = XMLParser(xml)
+        
+        n_prot = canc.find_text_from_tag("nProt")
+        x_just = canc.find_text_from_tag("xJust")
+        ch_nfe = canc.find_text_from_tag("chNFe")
+        
+        return n_prot and x_just and ch_nfe
+    
+    @staticmethod
+    def carta_is_valid(xml: str):
+        carta = XMLParser(xml)
+
+        ch_nfe = carta.find_text_from_tag("ChaveAcesso")
+        x_correcao = carta.find_text_from_tag("Correcao")
+        
+        return ch_nfe and x_correcao
 
     @classmethod
     def evento_from_cancelamento(

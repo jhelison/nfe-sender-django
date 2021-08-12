@@ -1,28 +1,38 @@
 from rest_framework import serializers
-from packages.core.xml_parser import NFeParser, XMLParser
+from packages.core.xml_parser import NFeParser, EventoParser
 
+class NFESerializer(serializers.Serializer):
+    xml = serializers.CharField()
+    
+    def validate_xml(self, xml):
+        try:
+            nfe = NFeParser(xml)
+            if not nfe.is_valid():
+                raise serializers.ValidationError("Erro ao ler xml")
+        except:
+            raise serializers.ValidationError("Erro ao ler xml")
+                
+        return xml
 
-def validate_NFe(value):
-    try:
-        nfe = NFeParser(value)
-    except:
-        serializers.ValidationError("Erro ao ler xml")
-        return
-
-    if not nfe.is_valid:
-        serializers.ValidationError("NFe invalida")
-
-
-class XMLSerializer(serializers.Serializer):
-    xml = serializers.CharField(validators=[validate_NFe])
-
-
-def validade_cancelamento(value):
-    try:
-        canc = XMLParser(value)
-    except:
-        serializers.ValidationError("Erro ao ler xml")
-        return
-
-    if not canc.is_valid:
-        serializers.ValidationError("Cancelamento invalido")
+class CancelamentoSerializer(serializers.Serializer):
+    xml = serializers.CharField()
+    
+    def validate_xml(self, xml):
+        try:
+            if not EventoParser.cancelamento_is_valid(xml):
+                raise serializers.ValidationError("Erro ao ler xml")
+        except:
+            raise serializers.ValidationError("Erro ao ler xml")
+                
+        return xml
+class CartaSerializer(serializers.Serializer):
+    xml = serializers.CharField()
+    
+    def validate_xml(self, xml):
+        try:
+            if not EventoParser.carta_is_valid(xml):
+                raise serializers.ValidationError("Erro ao ler xml")
+        except:
+            raise serializers.ValidationError("Erro ao ler xml")
+                
+        return xml
