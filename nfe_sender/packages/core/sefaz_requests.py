@@ -78,9 +78,11 @@ class SefazRequest:
             "hom." if self.is_hom else ""
         )
         SERVICE = "nfeRecepcaoEvento"
+        
+        evento = deepcopy(evento)
 
         root = etree.Element("envEvento", nsmap=self.nsmap, versao="1.00")
         root.append(el_with_text("idLote", str(int(time.time()))))
-        root.append(deepcopy(evento))
+        root.append(evento)
 
         return URL, SERVICE, root

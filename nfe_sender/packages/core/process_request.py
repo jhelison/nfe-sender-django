@@ -63,9 +63,9 @@ def process_cancelamento(user_data: dict, xml: str) -> dict:
         evento=evento.root
     )
 
-    response = XMLParser(SefazClient(cert).post(url, service, root))
+    response = SefazClient(cert).post(url, service, root)
 
-    return response.dict
+    return ReponseParser(response, evento).evento_response()
 
 
 def process_carta(user_data: dict, xml: str) -> dict:
@@ -86,6 +86,6 @@ def process_carta(user_data: dict, xml: str) -> dict:
         evento=evento.root
     )
 
-    response = XMLParser(SefazClient(cert).post(url, service, root))
+    response = SefazClient(cert).post(url, service, root)
 
-    return response.dict
+    return ReponseParser(response, evento).evento_response()

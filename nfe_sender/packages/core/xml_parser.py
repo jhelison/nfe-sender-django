@@ -9,8 +9,6 @@ import re
 from datetime import datetime
 
 NSMAP = {None: "http://www.portalfiscal.inf.br/nfe"}
-
-
 class XMLParser:
     root: etree.Element
 
@@ -28,14 +26,14 @@ class XMLParser:
                 return
 
     def set_as_hom(self) -> None:
-        root = deepcopy(self.root)
+        new_root = deepcopy(self.root)
 
-        for child in root.iter("*"):
+        for child in new_root.iter("*"):
             if etree.QName(child).localname == "tpAmb":
                 child.text = "2"
                 break
 
-        for child in root.iter("*"):
+        for child in new_root.iter("*"):
             if etree.QName(child).localname == "dest":
                 for grandchild in child.iter("*"):
                     if etree.QName(grandchild).localname == "xNome":
@@ -44,7 +42,7 @@ class XMLParser:
                         )
                         break
 
-        self.root = root
+        self.root = new_root
 
     def sign(self, certificate: CertificateA1) -> None:
         self.remove_signature()
@@ -86,12 +84,23 @@ class XMLParser:
         return loads(dumps(xparsed))
     
     def remove_namespaces(self):
-        root = deepcopy(self.root)
-        for child in root.getiterator():
+        new_root = deepcopy(self.root)
+        for child in new_root.getiterator():
             child.tag = etree.QName(child).localname
-        etree.cleanup_namespaces(root)
+        etree.cleanup_namespaces(new_root)
         
-        self.root = root
+        self.root = new_root
+        
+    def clean_root(self, nsmap: bool = True):
+        nsmap = NSMAP if nsmap else None
+                
+        root_tag = etree.QName(self.root).localname
+        new_root = etree.Element(root_tag, nsmap=nsmap, **self.root.attrib)
+        
+        for child in self.root:
+            new_root.append(child)
+                        
+        self.root = new_root
 
 
     @staticmethod
@@ -252,9 +261,10 @@ class ReponseParser:
             prot_nfe = self.response.child_XMLParser("protNFe")
 
             return {
+                "lote_is_sucessfull": self.lote_status() == "104",
                 "lote_status": self.lote_status(),
                 "lote_motivo": self.x_motivo(),
-                "nfe_is_sucess": prot_nfe.find_text_from_tag("cStat") == "100",
+                "nfe_is_sucessfull": prot_nfe.find_text_from_tag("cStat") == "100",
                 "nfe_status": prot_nfe.find_text_from_tag("cStat"),
                 "nfe_motivo": prot_nfe.find_text_from_tag("xMotivo"),
                 **self.response.dict,
@@ -264,6 +274,7 @@ class ReponseParser:
             }
         else:            
             return {
+                "lote_is_sucessfull": self.lote_status() == "104",
                 "lote_status": self.lote_status(),
                 **self.response.dict,
                 "nfe-ret": str(self.response),
@@ -276,7 +287,39 @@ class ReponseParser:
         
         proc_nfe = f'<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">{xml_signed}{prot_nfe}</nfeProc>'
         return proc_nfe
+    
+    def evento_response(self):       
+        if self.lote_status():
+            ret_evento = self.response.child_XMLParser("retEvento")
+            
+            return {
+                "lote_is_sucessfull": self.lote_status() == "128",
+                "lote_status": self.lote_status(),
+                "lote_motivo": self.x_motivo(),
+                "evento_is_sucessfull": ret_evento.find_text_from_tag("cStat") == "135",
+                "evento_status": ret_evento.find_text_from_tag("cStat"),
+                "evento_motivo": ret_evento.find_text_from_tag("xMotivo"),
+                **self.response.dict,
+                "evento-ret": str(self.response),
+                "can_get": self.get_can_get(),
+                "evento": str(self.xml_signed)
+            }
+            
+        else:
+            return {
+                "lote_is_sucessfull": self.lote_status() == "128",
+                "lote_status": self.lote_status(),
+                "lote_motivo": self.x_motivo(),
+                **self.response.dict,
+                "evento": str(self.xml_signed)
+            }
 
+    def get_can_get(self):
+        self.response.clean_root()  
+        response = str(self.response)
+        nfe_resul_msg = f'<nfeResultMsg xmlns="http://www.portalfiscal.inf.br/nfe/wsdl/NFeRecepcaoEvento4">{response}</nfeResultMsg>'
+        
+        return nfe_resul_msg
 
 def el_with_text(tag: str, text: any) -> etree.Element:
     """
