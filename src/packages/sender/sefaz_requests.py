@@ -2,7 +2,7 @@ from copy import deepcopy
 from lxml import etree
 import time
 
-from packages.core.xml_parser import el_with_text
+from packages.sender.xml_parser import el_with_text
 
 
 class SefazRequest:
@@ -78,7 +78,7 @@ class SefazRequest:
             "hom." if self.is_hom else ""
         )
         SERVICE = "nfeRecepcaoEvento"
-        
+
         evento = deepcopy(evento)
 
         root = etree.Element("envEvento", nsmap=self.nsmap, versao="1.00")

@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from .serializers import NFESerializer, CancelamentoSerializer, CartaSerializer
-from packages.core.process_request import (
+from packages.sender.process_request import (
     process_autorizacao,
     process_cancelamento,
     process_carta,

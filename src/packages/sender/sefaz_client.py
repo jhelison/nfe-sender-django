@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 import os
 import tempfile
-from packages.core.certificate import CertificateA1, CertificateAsFile
+from packages.sender.certificate import CertificateA1, CertificateAsFile
 import requests
 from requests import Session
 from zeep import Client

@@ -1,4 +1,4 @@
-from packages.core.certificate import CertificateA1
+from packages.sender.certificate import CertificateA1
 from lxml import etree
 import signxml
 

@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from .serializers import ConsultaProtocoloSerializer
-from packages.core.process_request import process_status, process_consulta_protocolo
+from packages.sender.process_request import process_status, process_consulta_protocolo
 
 # , process_consulta_protocolo
 

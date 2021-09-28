@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from packages.core.certificate import CertificateA1
+from packages.sender.certificate import CertificateA1
 from rest_framework.authtoken.models import Token
 import re
 
