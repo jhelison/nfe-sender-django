@@ -1,5 +1,5 @@
 VERSION = $(shell (poetry version).split(' ')[1])
-PROJECTNAME = nfe_sender
+PROJECTNAME = src
 
 MANAGEPY = $(CURDIR)/$(PROJECTNAME)/manage.py
 DATABASE = $(CURDIR)/$(PROJECTNAME)/db.sqlite3
@@ -21,7 +21,6 @@ test:
 superuser:
 	python ./nfe_sender/manage.py createsuperuser
 
-# $(wildcard ../Test/*/.)
 
 reset:
 	pwsh -noprofile -command if(Test-Path $(DATABASE)) {Remove-Item $(DATABASE)}
