@@ -1,5 +1,3 @@
 {
-    "python.analysis.extraPaths": [
-        "./nfe_sender"
-    ]
+    "editor.formatOnSave": true
 }
