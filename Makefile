@@ -15,7 +15,6 @@ migrate:
 	python $(MANAGEPY) migrate
 
 test:
-	poetry run black .
 	poetry run pytest -s -x --no-header -v
 
 superuser:
